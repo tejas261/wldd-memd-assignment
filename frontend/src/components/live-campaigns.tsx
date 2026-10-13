@@ -1,5 +1,9 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from './ui/alert';
+import { Badge } from './ui/badge';
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, RefreshCw } from 'lucide-react';
@@ -38,17 +42,17 @@ export function LiveCampaigns() {
           <h1>Live campaigns</h1>
           <p>Browse campaigns with budget available and submit a post to join.</p>
         </div>
-        <button className="button subtle" onClick={campaigns.reload} disabled={campaigns.loading}>
+        <Button variant="outline" onClick={campaigns.reload} disabled={campaigns.loading}>
           <RefreshCw size={15} />
           Refresh
-        </button>
+        </Button>
       </div>
       {notice && (
-        <div className="notice success" role="status">
-          <span>
+        <Alert className="notice success" role="status">
+          <AlertDescription className="block">
             {notice} <Link href="/creator">View your dashboard</Link>
-          </span>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
       <section aria-label="Live campaigns">
         <div className="section-heading">
@@ -83,17 +87,21 @@ export function LiveCampaigns() {
                   <CampaignCard key={campaign._id} campaign={campaign}>
                     {campaign.hasSubmitted ? (
                       <div className="joined-action">
-                        <span className="status live">Post submitted</span>
-                        <Link className="button secondary" href="/creator">
-                          View dashboard
-                          <ArrowUpRight size={16} />
-                        </Link>
+                        <Badge variant="outline" className="status live">
+                          Post submitted
+                        </Badge>
+                        <Button asChild variant="outline">
+                          <Link href="/creator">
+                            View dashboard
+                            <ArrowUpRight size={16} />
+                          </Link>
+                        </Button>
                       </div>
                     ) : (
-                      <button className="button secondary" onClick={() => setSelected(campaign)}>
+                      <Button variant="outline" onClick={() => setSelected(campaign)}>
                         Submit a post
                         <ArrowUpRight size={16} />
-                      </button>
+                      </Button>
                     )}
                   </CampaignCard>
                 ))}

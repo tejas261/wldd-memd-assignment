@@ -6,6 +6,8 @@ Brands create campaigns with a budget and view milestones. Creators submit an In
 
 Built with Next.js and TypeScript, Express, Mongoose and MongoDB Atlas. Authentication uses JWTs in an HTTP-only cookie.
 
+The frontend uses shadcn/ui (Radix) components with a dark Tailwind theme. Shared primitives live in `frontend/src/components/ui`; `frontend/components.json` configures the component generator.
+
 ## Setup
 
 Use Node 24 and a MongoDB Atlas database (or a local MongoDB replica set). Transactions need a replica set; a standalone MongoDB instance won't work.

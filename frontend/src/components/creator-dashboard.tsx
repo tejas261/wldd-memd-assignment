@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, ExternalLink, RefreshCw } from 'lucide-react';
@@ -37,10 +39,12 @@ export function CreatorDashboard() {
             )}
           </p>
         </div>
-        <Link className="button primary" href="/creator/campaigns">
-          Browse live campaigns
-          <ArrowUpRight size={18} />
-        </Link>
+        <Button asChild>
+          <Link href="/creator/campaigns">
+            Browse live campaigns
+            <ArrowUpRight size={18} />
+          </Link>
+        </Button>
       </div>
       {earnings.error && <ErrorNotice error={earnings.error} retry={earnings.reload} />}
       <LoadingContent
@@ -83,10 +87,10 @@ export function CreatorDashboard() {
             </h2>
             <p>Your submitted posts and payouts · 5 per page</p>
           </div>
-          <button className="button subtle" onClick={earnings.reload} disabled={earnings.loading}>
+          <Button variant="outline" onClick={earnings.reload} disabled={earnings.loading}>
             <RefreshCw size={15} />
             Refresh
-          </button>
+          </Button>
         </div>
         <LoadingContent
           loading={earnings.loading}
@@ -115,15 +119,12 @@ export function CreatorDashboard() {
                           />
                         }
                       >
-                        <a
-                          className="button secondary"
-                          href={submission.postUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Open post
-                          <ExternalLink size={15} />
-                        </a>
+                        <Button asChild variant="outline">
+                          <a href={submission.postUrl} target="_blank" rel="noopener noreferrer">
+                            Open post
+                            <ExternalLink size={15} />
+                          </a>
+                        </Button>
                       </CampaignCard>
                     ) : (
                       <SubmissionRow submission={submission} onUpdated={earnings.reload} />

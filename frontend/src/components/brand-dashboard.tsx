@@ -1,5 +1,18 @@
 'use client';
 
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/ui/table';
+
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from './ui/alert';
+import { Badge } from './ui/badge';
+
 import { useState } from 'react';
 import { Plus, RefreshCw } from 'lucide-react';
 import { useResource } from '@/hooks/use-resource';
@@ -33,19 +46,15 @@ export function BrandDashboard() {
           <h1>Campaign overview</h1>
           <p>Manage campaign budgets and review creator submissions.</p>
         </div>
-        <button
-          className="button primary"
-          disabled={!session.user}
-          onClick={() => setCreating(true)}
-        >
+        <Button disabled={!session.user} onClick={() => setCreating(true)}>
           <Plus size={18} />
           Create campaign
-        </button>
+        </Button>
       </div>
       {notice && (
-        <div className="notice success" role="status">
-          {notice}
-        </div>
+        <Alert className="notice success" role="status">
+          <AlertDescription>{notice}</AlertDescription>
+        </Alert>
       )}
       {resource.error && <ErrorNotice error={resource.error} retry={resource.reload} />}
       <LoadingContent
@@ -87,10 +96,10 @@ export function BrandDashboard() {
               </span>
             </h2>
           </div>
-          <button className="button subtle" disabled={resource.loading} onClick={resource.reload}>
+          <Button variant="outline" disabled={resource.loading} onClick={resource.reload}>
             <RefreshCw size={15} />
             Refresh
-          </button>
+          </Button>
         </div>
         <LoadingContent
           loading={resource.loading}
@@ -103,64 +112,68 @@ export function BrandDashboard() {
                 Create a campaign to start accepting posts from creators.
               </Empty>
             ) : (
-              <div
-                className="table-scroll"
-                tabIndex={0}
-                role="region"
-                aria-label="Campaign budgets"
-              >
-                <table className="campaign-table">
-                  <thead>
-                    <tr>
-                      <th scope="col">Campaign</th>
-                      <th scope="col">Platform</th>
-                      <th scope="col" className="amount">
+              <div className="table-scroll">
+                <Table
+                  className="campaign-table"
+                  containerProps={{ tabIndex: 0, role: 'region', 'aria-label': 'Campaign budgets' }}
+                >
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead scope="col">Campaign</TableHead>
+                      <TableHead scope="col">Platform</TableHead>
+                      <TableHead scope="col" className="amount">
                         Budget
-                      </th>
-                      <th scope="col" className="amount">
+                      </TableHead>
+                      <TableHead scope="col" className="amount">
                         Paid
-                      </th>
-                      <th scope="col" className="amount">
+                      </TableHead>
+                      <TableHead scope="col" className="amount">
                         Remaining
-                      </th>
-                      <th scope="col">Status</th>
-                      <th scope="col">
+                      </TableHead>
+                      <TableHead scope="col">Status</TableHead>
+                      <TableHead scope="col">
                         <span className="sr-only">Actions</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {resource.data.campaigns.map((campaign) => (
-                      <tr key={campaign._id}>
-                        <td>
+                      <TableRow key={campaign._id}>
+                        <TableCell>
                           <h3>{campaign.name}</h3>
                           <span className="muted">{campaign.milestones.length} milestones</span>
-                        </td>
-                        <td>
+                        </TableCell>
+                        <TableCell>
                           <Platform value={campaign.platform} />
-                        </td>
-                        <td className="amount">{money(campaign.budget)}</td>
-                        <td className="amount">{money(campaign.spent)}</td>
-                        <td className="amount">
+                        </TableCell>
+                        <TableCell className="amount">{money(campaign.budget)}</TableCell>
+                        <TableCell className="amount">{money(campaign.spent)}</TableCell>
+                        <TableCell className="amount">
                           {money(Math.max(0, campaign.budget - campaign.spent))}
-                        </td>
-                        <td>
-                          <span
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
                             className={`status ${campaign.spent < campaign.budget ? 'live' : ''}`}
                           >
                             <i />
                             {campaign.spent < campaign.budget ? 'Live' : 'Budget used'}
-                          </span>
-                        </td>
-                        <td>
-                          <button className="text-button" onClick={() => setSelected(campaign)}>
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="h-auto px-0"
+                            onClick={() => setSelected(campaign)}
+                          >
                             View submissions
-                          </button>
-                        </td>
-                      </tr>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
               </div>
             ))}
         </LoadingContent>

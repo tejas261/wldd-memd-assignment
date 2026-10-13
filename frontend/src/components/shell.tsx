@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -72,15 +74,16 @@ export function Shell({
                 <strong>{user.name}</strong>
                 <span>{user.role === 'brand' ? 'Brand account' : 'Creator account'}</span>
               </div>
-              <button
-                className="icon-button"
+              <Button
+                variant="ghost"
+                size="icon"
                 title="Log out"
                 aria-label="Log out"
                 disabled={busy}
                 onClick={logout}
               >
                 <LogOut size={18} />
-              </button>
+              </Button>
             </>
           ) : (
             <>

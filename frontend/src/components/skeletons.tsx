@@ -1,4 +1,14 @@
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/ui/table';
 import type { ReactNode } from 'react';
+import { Skeleton as SkeletonPrimitive } from './ui/skeleton';
+import { Card } from './ui/card';
 
 export function Skeleton({
   width = '100%',
@@ -9,7 +19,13 @@ export function Skeleton({
   height?: number | string;
   className?: string;
 }) {
-  return <span className={`skeleton ${className}`} style={{ width, height }} aria-hidden="true" />;
+  return (
+    <SkeletonPrimitive
+      className={`skeleton ${className}`}
+      style={{ width, height }}
+      aria-hidden="true"
+    />
+  );
 }
 
 export function LoadingContent({
@@ -41,7 +57,7 @@ export function StatsSkeleton() {
   return (
     <div className="stats">
       {[0, 1, 2].map((index) => (
-        <div className="stat stat-skeleton" key={index}>
+        <Card className="stat stat-skeleton gap-0" key={index}>
           <div className="stat-label">
             <Skeleton width="65%" height="1em" />
           </div>
@@ -51,7 +67,7 @@ export function StatsSkeleton() {
           <span>
             <Skeleton width="85%" height="1em" />
           </span>
-        </div>
+        </Card>
       ))}
     </div>
   );
@@ -60,45 +76,45 @@ export function StatsSkeleton() {
 export function CampaignTableSkeleton({ rows = 3 }: { rows?: number }) {
   return (
     <div className="table-scroll">
-      <table className="campaign-table">
-        <thead>
-          <tr>
+      <Table className="campaign-table">
+        <TableHeader>
+          <TableRow>
             {['Campaign', 'Platform', 'Budget', 'Paid', 'Remaining', 'Status', ''].map(
               (label, index) => (
-                <th key={index} className={index >= 2 && index <= 4 ? 'amount' : undefined}>
+                <TableHead key={index} className={index >= 2 && index <= 4 ? 'amount' : undefined}>
                   {label}
-                </th>
+                </TableHead>
               ),
             )}
-          </tr>
-        </thead>
-        <tbody>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {Array.from({ length: rows }, (_, index) => (
-            <tr key={index}>
-              <td>
+            <TableRow key={index}>
+              <TableCell>
                 <div className="skeleton-stack skeleton-campaign-name">
                   <Skeleton width="80%" height={18} />
                   <Skeleton width="55%" height={12} />
                 </div>
-              </td>
-              <td>
+              </TableCell>
+              <TableCell>
                 <Skeleton width={85} />
-              </td>
+              </TableCell>
               {[0, 1, 2].map((column) => (
-                <td className="amount" key={column}>
+                <TableCell className="amount" key={column}>
                   <Skeleton width={65} />
-                </td>
+                </TableCell>
               ))}
-              <td>
+              <TableCell>
                 <Skeleton width={48} />
-              </td>
-              <td>
+              </TableCell>
+              <TableCell>
                 <Skeleton width={105} />
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

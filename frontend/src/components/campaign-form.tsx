@@ -1,6 +1,11 @@
 'use client';
 
-import { useRef, useState, type FormEvent } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
+import { useId, useRef, useState, type FormEvent } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Plus, Trash2, ArrowRight } from 'lucide-react';
 import { api } from '@/utils/api';
 import { message } from '@/utils/errors';
@@ -13,6 +18,7 @@ export function CampaignForm({
   onClose: () => void;
   onCreated: () => void;
 }) {
+  const platformId = useId();
   const [milestones, setMilestones] = useState([
     { views: '10000', payout: '500' },
     { views: '50000', payout: '2000' },
@@ -53,31 +59,39 @@ export function CampaignForm({
     );
   }
   return (
-    <Modal title="Create campaign" onClose={onClose} busy={busy}>
-      <p className="modal-intro">Campaigns are live as soon as they’re created.</p>
+    <Modal
+      title="Create campaign"
+      description="Campaigns are live as soon as they’re created."
+      onClose={onClose}
+      busy={busy}
+    >
       <form onSubmit={submit}>
-        <label className="field">
+        <Label className="field">
           Campaign name
-          <input
+          <Input
             name="name"
             placeholder="e.g. Weekend campaign"
             minLength={3}
             maxLength={100}
             required
-            autoFocus
           />
-        </label>
+        </Label>
         <div className="form-row">
-          <label className="field">
-            Platform
-            <select name="platform">
-              <option value="instagram">Instagram</option>
-              <option value="youtube">YouTube</option>
-            </select>
-          </label>
-          <label className="field">
+          <div className="field">
+            <Label htmlFor={platformId}>Platform</Label>
+            <Select name="platform" defaultValue="instagram">
+              <SelectTrigger id={platformId} className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectItem value="instagram">Instagram</SelectItem>
+                <SelectItem value="youtube">YouTube</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Label className="field">
             Total budget (₹)
-            <input
+            <Input
               name="budget"
               type="number"
               min="1"
@@ -86,7 +100,7 @@ export function CampaignForm({
               defaultValue="25000"
               required
             />
-          </label>
+          </Label>
         </div>
         <div className="form-section-heading">
           <h3>Payout milestones</h3>
@@ -102,7 +116,7 @@ export function CampaignForm({
         </div>
         {milestones.map((milestone, index) => (
           <div className="milestone-row" key={index}>
-            <input
+            <Input
               aria-label={`Milestone ${index + 1} views`}
               type="number"
               min="1"
@@ -112,7 +126,7 @@ export function CampaignForm({
               required
               onChange={(event) => updateMilestone(index, 'views', event.target.value)}
             />
-            <input
+            <Input
               aria-label={`Milestone ${index + 1} payout`}
               type="number"
               min="1"
@@ -122,35 +136,38 @@ export function CampaignForm({
               required
               onChange={(event) => updateMilestone(index, 'payout', event.target.value)}
             />
-            <button
-              className="icon-button"
+            <Button
+              variant="ghost"
+              size="icon"
               type="button"
               aria-label={`Remove milestone ${index + 1}`}
               disabled={milestones.length === 1}
               onClick={() => setMilestones((items) => items.filter((_, i) => i !== index))}
             >
               <Trash2 size={17} />
-            </button>
+            </Button>
           </div>
         ))}
-        <button
-          className="text-button add-milestone"
+        <Button
+          variant="link"
+          size="sm"
+          className="add-milestone h-auto px-0"
           type="button"
           disabled={milestones.length >= 10}
           onClick={() => setMilestones((items) => [...items, { views: '', payout: '' }])}
         >
           <Plus size={16} />
           Add milestone
-        </button>
+        </Button>
         {error && <ErrorNotice error={error} />}
         <div className="modal-actions">
-          <button type="button" className="button secondary" onClick={onClose} disabled={busy}>
+          <Button type="button" variant="outline" onClick={onClose} disabled={busy}>
             Cancel
-          </button>
-          <button className="button primary" disabled={busy}>
+          </Button>
+          <Button type="submit" disabled={busy}>
             {busy ? 'Creating…' : 'Launch campaign'}
             <ArrowRight size={17} />
-          </button>
+          </Button>
         </div>
       </form>
     </Modal>

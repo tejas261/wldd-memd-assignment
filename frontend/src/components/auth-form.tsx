@@ -1,6 +1,12 @@
 'use client';
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
+import { useEffect, useId, useState, type FormEvent } from 'react';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { Card } from './ui/card';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
@@ -11,6 +17,7 @@ import { ErrorNotice, Logo } from './ui';
 
 export function AuthForm({ signup = false }: { signup?: boolean }) {
   const router = useRouter();
+  const id = useId();
   const [role, setRole] = useState<Role>('creator');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -45,37 +52,45 @@ export function AuthForm({ signup = false }: { signup?: boolean }) {
   return (
     <main className="auth-page">
       <Logo />
-      <section className="auth-panel">
+      <Card className="auth-panel">
         <div className="auth-form-wrap">
           <h1>{signup ? 'Create an account' : 'Log in'}</h1>
           <p>{signup ? 'Choose a role to get started.' : 'Access your campaigns and earnings.'}</p>
           <form onSubmit={submit}>
             {signup && (
-              <fieldset className="role-picker">
-                <legend>Account type</legend>
-                {(['creator', 'brand'] as const).map((value) => (
-                  <label key={value} className={role === value ? 'selected' : ''}>
-                    <input
-                      type="radio"
-                      name="role"
-                      value={value}
-                      checked={role === value}
-                      onChange={() => setRole(value)}
-                    />
-                    <strong>{value === 'creator' ? 'Creator' : 'Brand'}</strong>
-                    <span>
-                      {value === 'creator'
-                        ? 'Submit posts and earn'
-                        : 'Create and manage campaigns'}
-                    </span>
-                  </label>
-                ))}
+              <fieldset>
+                <legend id={`${id}-role-label`} className="mb-2">
+                  Account type
+                </legend>
+                <RadioGroup
+                  name="role"
+                  value={role}
+                  onValueChange={(value) => setRole(value as Role)}
+                  aria-labelledby={`${id}-role-label`}
+                  className="role-picker"
+                >
+                  {(['creator', 'brand'] as const).map((value) => (
+                    <Label
+                      key={value}
+                      htmlFor={`${id}-${value}`}
+                      className={role === value ? 'selected' : ''}
+                    >
+                      <RadioGroupItem id={`${id}-${value}`} value={value} />
+                      <strong>{value === 'creator' ? 'Creator' : 'Brand'}</strong>
+                      <span>
+                        {value === 'creator'
+                          ? 'Submit posts and earn'
+                          : 'Create and manage campaigns'}
+                      </span>
+                    </Label>
+                  ))}
+                </RadioGroup>
               </fieldset>
             )}
             {signup && (
-              <label className="field">
+              <Label className="field">
                 Your name
-                <input
+                <Input
                   name="name"
                   autoComplete="name"
                   placeholder="Your name"
@@ -83,11 +98,11 @@ export function AuthForm({ signup = false }: { signup?: boolean }) {
                   maxLength={80}
                   required
                 />
-              </label>
+              </Label>
             )}
-            <label className="field">
+            <Label className="field">
               Email address
-              <input
+              <Input
                 type="email"
                 name="email"
                 autoComplete="email"
@@ -95,10 +110,10 @@ export function AuthForm({ signup = false }: { signup?: boolean }) {
                 maxLength={254}
                 required
               />
-            </label>
-            <label className="field">
+            </Label>
+            <Label className="field">
               Password
-              <input
+              <Input
                 type="password"
                 name="password"
                 autoComplete={signup ? 'new-password' : 'current-password'}
@@ -107,12 +122,12 @@ export function AuthForm({ signup = false }: { signup?: boolean }) {
                 maxLength={72}
                 required
               />
-            </label>
+            </Label>
             {error && <ErrorNotice error={error} />}
-            <button className="button primary full" disabled={busy}>
+            <Button type="submit" className="w-full" disabled={busy}>
               {busy ? 'One moment…' : signup ? 'Create account' : 'Log in'}
               <ArrowRight size={18} />
-            </button>
+            </Button>
           </form>
           <p className="auth-switch">
             {signup ? 'Already have an account?' : 'Need an account?'}{' '}
@@ -121,7 +136,7 @@ export function AuthForm({ signup = false }: { signup?: boolean }) {
             </Link>
           </p>
         </div>
-      </section>
+      </Card>
     </main>
   );
 }

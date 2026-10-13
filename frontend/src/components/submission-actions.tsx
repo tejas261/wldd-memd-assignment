@@ -1,5 +1,12 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from './ui/alert';
+import { Badge } from './ui/badge';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
+
 import { useState, type FormEvent } from 'react';
 import { ArrowUpRight, ExternalLink, FlaskConical } from 'lucide-react';
 import { api } from '@/utils/api';
@@ -39,14 +46,20 @@ export function SubmitPost({
     }
   }
   return (
-    <Modal title="Submit a post" onClose={onClose} busy={busy}>
-      <p className="modal-intro">
-        Submitting to <strong>{campaign.name}</strong>
-      </p>
+    <Modal
+      title="Submit a post"
+      description={
+        <>
+          Submitting to <strong>{campaign.name}</strong>
+        </>
+      }
+      onClose={onClose}
+      busy={busy}
+    >
       <form onSubmit={submit}>
-        <label className="field">
+        <Label className="field">
           {campaign.platform === 'instagram' ? 'Instagram' : 'YouTube'} post link
-          <input
+          <Input
             name="postUrl"
             type="url"
             placeholder={
@@ -55,25 +68,27 @@ export function SubmitPost({
                 : 'https://www.youtube.com/watch?v=…'
             }
             required
-            autoFocus
             maxLength={2048}
           />
-        </label>
+        </Label>
         <p className="field-hint">
           One post per campaign. Use a public post on the campaign’s platform.
         </p>
-        <div className="notice">
-          Payouts follow the highest milestone reached, subject to the campaign’s remaining budget.
-        </div>
+        <Alert className="notice" role="note">
+          <AlertDescription>
+            Payouts follow the highest milestone reached, subject to the campaign’s remaining
+            budget.
+          </AlertDescription>
+        </Alert>
         {error && <ErrorNotice error={error} />}
         <div className="modal-actions">
-          <button type="button" className="button secondary" onClick={onClose} disabled={busy}>
+          <Button type="button" variant="outline" onClick={onClose} disabled={busy}>
             Cancel
-          </button>
-          <button className="button primary" disabled={busy}>
+          </Button>
+          <Button type="submit" disabled={busy}>
             {busy ? 'Submitting…' : 'Submit post'}
             <ArrowUpRight size={17} />
-          </button>
+          </Button>
         </div>
       </form>
     </Modal>
@@ -115,36 +130,40 @@ export function ViewSimulator({
     }
   }
   return (
-    <details className="simulator">
-      <summary>
-        <FlaskConical size={14} />
-        Simulate views
-      </summary>
-      <form onSubmit={update}>
-        <label className="field">
-          Total views
-          <input
-            aria-label="Total views"
-            type="number"
-            min="0"
-            step="1"
-            max="1000000000000"
-            value={views}
-            required
-            onChange={(event) => setViews(event.target.value)}
-          />
-        </label>
-        <button className="button secondary" disabled={busy}>
-          {busy ? 'Updating…' : 'Update views'}
-        </button>
-      </form>
-      {error && <ErrorNotice error={error} />}{' '}
-      {notice && (
-        <p className="success-text" role="status">
-          {notice}
-        </p>
-      )}
-    </details>
+    <Collapsible className="simulator">
+      <CollapsibleTrigger asChild>
+        <Button type="button" variant="link" size="sm" className="h-auto px-0">
+          <FlaskConical size={14} />
+          Simulate views
+        </Button>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <form onSubmit={update}>
+          <Label className="field">
+            Total views
+            <Input
+              aria-label="Total views"
+              type="number"
+              min="0"
+              step="1"
+              max="1000000000000"
+              value={views}
+              required
+              onChange={(event) => setViews(event.target.value)}
+            />
+          </Label>
+          <Button type="submit" variant="outline" disabled={busy}>
+            {busy ? 'Updating…' : 'Update views'}
+          </Button>
+        </form>
+        {error && <ErrorNotice error={error} />}{' '}
+        {notice && (
+          <p className="success-text" role="status">
+            {notice}
+          </p>
+        )}
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
 
@@ -187,11 +206,13 @@ export function SubmissionRow({
       </div>
       <div className="submission-tags">
         {shortfall > 0 ? (
-          <span className="tag warning">Budget limited · {money(shortfall)} uncredited</span>
+          <Badge variant="outline" className="tag warning">
+            Budget limited · {money(shortfall)} uncredited
+          </Badge>
         ) : (
-          <span className="tag">
+          <Badge variant="outline" className="tag">
             {submission.payout > 0 ? 'Milestone reached' : 'No milestone reached'}
-          </span>
+          </Badge>
         )}
       </div>
       <ViewSimulator submission={submission} onUpdated={onUpdated} />
@@ -213,8 +234,11 @@ export function CampaignSubmissions({
     `/campaigns/${campaign._id}/submissions?page=${page}`,
   );
   return (
-    <Modal title={campaign.name} onClose={onClose}>
-      <p className="modal-intro">Payout milestones and submitted posts.</p>
+    <Modal
+      title={campaign.name}
+      description="Payout milestones and submitted posts."
+      onClose={onClose}
+    >
       <Ladder milestones={campaign.milestones} />
       <LoadingContent
         loading={resource.loading}

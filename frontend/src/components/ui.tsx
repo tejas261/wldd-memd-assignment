@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+
+import { useRef, useState } from 'react';
 import {
   ArrowDownLeft,
   Camera,
   Play,
-  X,
   ChevronLeft,
   ChevronRight,
   CircleAlert,
@@ -13,6 +14,12 @@ import {
 } from 'lucide-react';
 import { money, shortNumber } from '@/utils/format';
 import type { Campaign, Milestone } from '@/types';
+import { Alert, AlertDescription } from './ui/alert';
+import { Badge } from './ui/badge';
+import { Card } from './ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
+import { Progress } from './ui/progress';
+import { Pagination as PaginationRoot, PaginationContent, PaginationItem } from './ui/pagination';
 
 export function Logo() {
   return (
@@ -26,15 +33,17 @@ export function Logo() {
 }
 export function ErrorNotice({ error, retry }: { error: string; retry?: () => void }) {
   return (
-    <div className="notice error" role="alert">
+    <Alert variant="destructive" className="notice error">
       <CircleAlert size={18} />
-      <span>{error}</span>
-      {retry && (
-        <button className="text-button" onClick={retry}>
-          Retry
-        </button>
-      )}
-    </div>
+      <AlertDescription>
+        {error}
+        {retry && (
+          <Button type="button" variant="link" size="sm" className="h-auto px-0" onClick={retry}>
+            Retry
+          </Button>
+        )}
+      </AlertDescription>
+    </Alert>
   );
 }
 export function Empty({ title, children }: { title: string; children: React.ReactNode }) {
@@ -48,56 +57,62 @@ export function Empty({ title, children }: { title: string; children: React.Reac
 }
 export function Modal({
   title,
+  description,
   children,
   onClose,
   busy = false,
 }: {
   title: string;
+  description: React.ReactNode;
   children: React.ReactNode;
   onClose: () => void;
   busy?: boolean;
 }) {
-  const ref = useRef<HTMLDialogElement>(null);
-  const id = useId();
-  useEffect(() => {
-    const dialog = ref.current!;
-    const trigger = document.activeElement;
-    dialog.showModal();
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      dialog.close();
-      document.body.style.overflow = overflow;
-      if (trigger instanceof HTMLElement) trigger.focus();
-    };
-  }, []);
+  const trigger = useRef<HTMLElement | null>(null);
   return (
-    <dialog
-      ref={ref}
-      className="modal"
-      aria-labelledby={id}
-      onCancel={(event) => {
-        event.preventDefault();
-        if (!busy) onClose();
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open && !busy) onClose();
       }}
     >
-      <div className="modal-heading">
-        <h2 id={id}>{title}</h2>
-        <button className="icon-button" aria-label="Close dialog" disabled={busy} onClick={onClose}>
-          <X size={20} />
-        </button>
-      </div>
-      {children}
-    </dialog>
+      <DialogContent
+        className="modal max-h-[90dvh] overflow-y-auto bg-card p-4 sm:max-w-[580px] sm:p-6"
+        closeDisabled={busy}
+        aria-busy={busy}
+        onOpenAutoFocus={() => {
+          if (document.activeElement instanceof HTMLElement)
+            trigger.current = document.activeElement;
+        }}
+        onCloseAutoFocus={(event) => {
+          if (trigger.current?.isConnected) {
+            event.preventDefault();
+            trigger.current.focus();
+          }
+        }}
+        onEscapeKeyDown={(event) => {
+          if (busy) event.preventDefault();
+        }}
+        onPointerDownOutside={(event) => {
+          if (busy) event.preventDefault();
+        }}
+      >
+        <DialogHeader className="pr-9 text-left">
+          <DialogTitle className="[overflow-wrap:anywhere]">{title}</DialogTitle>
+          <DialogDescription className="[overflow-wrap:anywhere]">{description}</DialogDescription>
+        </DialogHeader>
+        {children}
+      </DialogContent>
+    </Dialog>
   );
 }
 export function Stat({ label, value, note }: { label: string; value: string; note: string }) {
   return (
-    <div className="stat">
+    <Card className="stat gap-0">
       <div className="stat-label">{label}</div>
       <strong>{value}</strong>
       <span>{note}</span>
-    </div>
+    </Card>
   );
 }
 export function Platform({ value }: { value: Campaign['platform'] }) {
@@ -139,10 +154,10 @@ export function CampaignCard({
       <div className="campaign-description">
         <div className="card-top">
           <Platform value={campaign.platform} />
-          <span className={`status ${remaining > 0 ? 'live' : ''}`}>
+          <Badge variant="outline" className={`status ${remaining > 0 ? 'live' : ''}`}>
             <i />
             {remaining > 0 ? 'Live' : 'Budget used'}
-          </span>
+          </Badge>
         </div>
         <div className="campaign-heading">
           <h3>{campaign.name}</h3>
@@ -152,10 +167,10 @@ export function CampaignCard({
           <span>{money(remaining)} left</span>
           <span className="muted">of {money(campaign.budget)}</span>
         </div>
-        <progress
+        <Progress
           className="budget-bar"
-          value={campaign.spent}
-          max={campaign.budget}
+          value={campaign.budget > 0 ? Math.min(100, (campaign.spent / campaign.budget) * 100) : 0}
+          getValueLabel={() => `${money(campaign.spent)} of ${money(campaign.budget)} spent`}
           aria-label={`${campaign.name} budget spent`}
         />
       </div>
@@ -169,9 +184,11 @@ function PayoutInfo({ campaign }: { campaign: Campaign }) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button
+      <Button
         type="button"
-        className="icon-button payout-info"
+        variant="ghost"
+        size="icon"
+        className="payout-info"
         aria-label={`Payout milestones for ${campaign.name}`}
         aria-haspopup="dialog"
         aria-expanded={open}
@@ -179,10 +196,9 @@ function PayoutInfo({ campaign }: { campaign: Campaign }) {
         onClick={() => setOpen(true)}
       >
         <Info size={17} />
-      </button>
+      </Button>
       {open && (
-        <Modal title="Payout milestones" onClose={() => setOpen(false)}>
-          <p className="modal-intro">{campaign.name}</p>
+        <Modal title="Payout milestones" description={campaign.name} onClose={() => setOpen(false)}>
           <Ladder milestones={campaign.milestones} />
           <p className="field-hint">
             Payouts follow the highest milestone reached, subject to the campaign’s remaining
@@ -209,26 +225,34 @@ export function Pagination({
   const pages = Math.ceil(total / limit);
   if (pages <= 1) return null;
   return (
-    <nav className="pagination" aria-label="Pagination">
-      <button
-        className="icon-button"
-        aria-label="Previous page"
-        disabled={loading || page <= 1}
-        onClick={() => onChange(page - 1)}
-      >
-        <ChevronLeft size={18} />
-      </button>
-      <span>
-        Page {page} of {pages}
-      </span>
-      <button
-        className="icon-button"
-        aria-label="Next page"
-        disabled={loading || page >= pages}
-        onClick={() => onChange(page + 1)}
-      >
-        <ChevronRight size={18} />
-      </button>
-    </nav>
+    <PaginationRoot className="pagination" aria-label="Pagination">
+      <PaginationContent className="gap-3">
+        <PaginationItem>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Previous page"
+            disabled={loading || page <= 1}
+            onClick={() => onChange(page - 1)}
+          >
+            <ChevronLeft size={18} />
+          </Button>
+        </PaginationItem>
+        <PaginationItem aria-live="polite">
+          Page {page} of {pages}
+        </PaginationItem>
+        <PaginationItem>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Next page"
+            disabled={loading || page >= pages}
+            onClick={() => onChange(page + 1)}
+          >
+            <ChevronRight size={18} />
+          </Button>
+        </PaginationItem>
+      </PaginationContent>
+    </PaginationRoot>
   );
 }
