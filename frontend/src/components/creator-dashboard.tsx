@@ -47,7 +47,7 @@ export function CreatorDashboard() {
     <Shell user={session.user} role="creator">
       <div className="page-heading">
         <div>
-          <h1>Overview</h1>
+          <h1>Dashboard</h1>
           <p>
             {session.user ? (
               `Hi ${session.user.name.split(' ')[0]}, here are your campaigns and earnings.`
@@ -56,10 +56,6 @@ export function CreatorDashboard() {
             )}
           </p>
         </div>
-        <a className="button primary" href="#campaigns">
-          Browse campaigns
-          <ArrowUpRight size={18} />
-        </a>
       </div>
       {notice && (
         <div className="notice success" role="status">

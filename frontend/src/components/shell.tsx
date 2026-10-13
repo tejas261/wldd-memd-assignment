@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { LayoutGrid, LogOut, Wallet, Radio } from 'lucide-react';
+import Link from 'next/link';
+import { LayoutGrid, LogOut } from 'lucide-react';
 import type { Role, User } from '@/types';
 import { api } from '@/utils/api';
 import { message } from '@/utils/errors';
@@ -40,20 +41,10 @@ export function Shell({
         <Logo />
         <div className="workspace-label">{role === 'brand' ? 'Brand' : 'Creator'} workspace</div>
         <nav aria-label="Main navigation">
-          <a className="nav-item active" href={`/${role}`} aria-current="page">
+          <Link className="nav-item active" href={`/${role}`} aria-current="page">
             <LayoutGrid size={18} />
-            Overview
-          </a>
-          <a className="nav-item" href="#campaigns">
-            <Radio size={18} />
-            Campaigns
-          </a>
-          {role === 'creator' && (
-            <a className="nav-item" href="#earnings">
-              <Wallet size={18} />
-              My submissions
-            </a>
-          )}
+            Dashboard
+          </Link>
         </nav>
         <div className="profile" aria-busy={!user}>
           {user ? (
@@ -88,12 +79,6 @@ export function Shell({
         </div>
       </aside>
       <div className="workspace">
-        <header className="topbar">
-          <span>
-            {role === 'brand' ? 'Brand' : 'Creator'} <span className="muted">/</span>{' '}
-            <strong>Overview</strong>
-          </span>
-        </header>
         <main id="main" className="main-content">
           {error && <ErrorNotice error={error} />} {children}
         </main>
