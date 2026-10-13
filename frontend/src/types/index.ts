@@ -17,6 +17,7 @@ export interface Campaign {
   spent: number;
   milestones: Milestone[];
   createdAt: string;
+  hasSubmitted?: boolean;
 }
 export interface Submission {
   _id: string;

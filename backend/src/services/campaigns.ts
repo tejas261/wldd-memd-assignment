@@ -59,8 +59,24 @@ export async function listCampaigns(user: SessionUser, pagination: z.infer<typeo
           },
         ])
       : [];
+  const submissions =
+    user.role === 'creator'
+      ? await Submission.find({
+          creator: user.id,
+          campaign: { $in: campaigns.map((campaign) => campaign._id) },
+        })
+          .select('campaign')
+          .lean()
+      : [];
+  const joined = new Set(submissions.map((submission) => String(submission.campaign)));
   return {
-    campaigns,
+    campaigns:
+      user.role === 'creator'
+        ? campaigns.map((campaign) => ({
+            ...campaign,
+            hasSubmitted: joined.has(String(campaign._id)),
+          }))
+        : campaigns,
     total,
     ...pagination,
     ...(user.role === 'brand' ? { summary: summary ?? { budget: 0, spent: 0, count: 0 } } : {}),

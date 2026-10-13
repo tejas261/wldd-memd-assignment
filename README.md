@@ -72,7 +72,7 @@ These accounts are available on the live app and through the local seed:
 | Brand   | `brand@memed.demo`   | `MemeDemo123!` |
 | Creator | `creator@memed.demo` | `MemeDemo123!` |
 
-Create a campaign as a brand, then sign in as a creator and submit a post link. Under **My submissions**, use **Simulate views** to update the post's total views. For the default ladder, 50,000 views earns ₹2,000; updating to 100,000 adds ₹3,000 if enough budget remains. The brand sees the same amount deducted from its budget.
+Create a campaign as a brand, then sign in as a creator. **Live campaigns** lists campaigns with budget available, 10 per page; submit a post link there to join. The creator dashboard shows only campaigns you’ve submitted to, five per page, including campaigns that have used their budget. Each campaign includes its post and payout controls. Use **Simulate views** to update the post's total views. For the default ladder, 50,000 views earns ₹2,000; updating to 100,000 adds ₹3,000 if enough budget remains. The brand sees the same amount deducted from its budget.
 
 The seed adds three campaigns and an example submission. Its post URL is a placeholder. Rerunning the seed doesn't clear existing data.
 

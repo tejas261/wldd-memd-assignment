@@ -103,38 +103,47 @@ export function CampaignTableSkeleton({ rows = 3 }: { rows?: number }) {
   );
 }
 
-export function CampaignListSkeleton({ rows = 2 }: { rows?: number }) {
+export function CampaignListSkeleton({
+  rows = 2,
+  withSubmission = false,
+}: {
+  rows?: number;
+  withSubmission?: boolean;
+}) {
   return (
     <div className="campaign-list">
       {Array.from({ length: rows }, (_, index) => (
-        <div className="campaign-card" key={index}>
-          <div className="campaign-description">
-            <div className="card-top">
-              <Skeleton width={85} />
-              <Skeleton width={40} height={12} />
-            </div>
-            <Skeleton width="75%" height={22} />
-            <div className="budget-info">
-              <Skeleton width="42%" height={12} />
-              <Skeleton width="30%" height={12} />
-            </div>
-            <Skeleton height={4} />
-          </div>
-          <div className="ladder">
-            <div className="ladder-label">
-              <span>Views</span>
-              <span>Total payout</span>
-            </div>
-            {[0, 1, 2].map((step) => (
-              <div className="ladder-step" key={step}>
-                <Skeleton width={45} height={18} />
-                <Skeleton width={55} height={18} />
+        <div key={index} className={withSubmission ? 'joined-campaign' : undefined}>
+          <div className="campaign-card">
+            <div className="campaign-description">
+              <div className="card-top">
+                <Skeleton width={85} />
+                <Skeleton width={40} height={12} />
               </div>
-            ))}
+              <Skeleton width="75%" height={22} />
+              <div className="budget-info">
+                <Skeleton width="42%" height={12} />
+                <Skeleton width="30%" height={12} />
+              </div>
+              <Skeleton height={4} />
+            </div>
+            <div className="ladder">
+              <div className="ladder-label">
+                <span>Views</span>
+                <span>Total payout</span>
+              </div>
+              {[0, 1, 2].map((step) => (
+                <div className="ladder-step" key={step}>
+                  <Skeleton width={45} height={18} />
+                  <Skeleton width={55} height={18} />
+                </div>
+              ))}
+            </div>
+            <div className="campaign-action">
+              <Skeleton className="skeleton-button" width={135} height={40} />
+            </div>
           </div>
-          <div className="campaign-action">
-            <Skeleton className="skeleton-button" width={135} height={40} />
-          </div>
+          {withSubmission && <SubmissionSkeleton showIdentity={false} />}
         </div>
       ))}
     </div>
@@ -145,29 +154,37 @@ export function SubmissionListSkeleton({ rows = 2 }: { rows?: number }) {
   return (
     <div className="submission-list">
       {Array.from({ length: rows }, (_, index) => (
-        <div className="submission-row" key={index}>
-          <div className="submission-top">
-            <div className="submission-name skeleton-stack">
-              <Skeleton width="70%" height={20} />
-              <Skeleton width={70} height={16} />
-            </div>
-            {['Views', 'Credited'].map((label) => (
-              <div className="submission-metric" key={label}>
-                <span>{label}</span>
-                <strong>
-                  <Skeleton width={65} height="1.5em" />
-                </strong>
-              </div>
-            ))}
-          </div>
-          <div className="submission-tags">
-            <Skeleton width={120} height={16} />
-          </div>
-          <div className="simulator">
-            <Skeleton width={105} height={26} />
-          </div>
-        </div>
+        <SubmissionSkeleton key={index} />
       ))}
+    </div>
+  );
+}
+
+function SubmissionSkeleton({ showIdentity = true }: { showIdentity?: boolean }) {
+  return (
+    <div className="submission-row">
+      <div className={`submission-top ${showIdentity ? '' : 'submission-totals'}`}>
+        {showIdentity && (
+          <div className="submission-name skeleton-stack">
+            <Skeleton width="70%" height={20} />
+            <Skeleton width={70} height={16} />
+          </div>
+        )}
+        {['Views', 'Credited'].map((label) => (
+          <div className="submission-metric" key={label}>
+            <span>{label}</span>
+            <strong>
+              <Skeleton width={65} height="1.5em" />
+            </strong>
+          </div>
+        ))}
+      </div>
+      <div className="submission-tags">
+        <Skeleton width={120} height={16} />
+      </div>
+      <div className="simulator">
+        <Skeleton width={105} height={26} />
+      </div>
     </div>
   );
 }

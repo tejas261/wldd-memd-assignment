@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutGrid, LogOut } from 'lucide-react';
+import { LayoutGrid, LogOut, Radio } from 'lucide-react';
 import type { Role, User } from '@/types';
 import { api } from '@/utils/api';
 import { message } from '@/utils/errors';
@@ -20,6 +20,7 @@ export function Shell({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   async function logout() {
@@ -40,11 +41,28 @@ export function Shell({
       <aside className="sidebar">
         <Logo />
         <div className="workspace-label">{role === 'brand' ? 'Brand' : 'Creator'} workspace</div>
-        <nav aria-label="Main navigation">
-          <Link className="nav-item active" href={`/${role}`} aria-current="page">
+        <nav
+          aria-label="Main navigation"
+          className={role === 'creator' ? 'creator-navigation' : undefined}
+        >
+          <Link
+            className={`nav-item ${pathname === `/${role}` ? 'active' : ''}`}
+            href={`/${role}`}
+            aria-current={pathname === `/${role}` ? 'page' : undefined}
+          >
             <LayoutGrid size={18} />
             Dashboard
           </Link>
+          {role === 'creator' && (
+            <Link
+              className={`nav-item ${pathname === '/creator/campaigns' ? 'active' : ''}`}
+              href="/creator/campaigns"
+              aria-current={pathname === '/creator/campaigns' ? 'page' : undefined}
+            >
+              <Radio size={18} />
+              Live campaigns
+            </Link>
+          )}
         </nav>
         <div className="profile" aria-busy={!user}>
           {user ? (

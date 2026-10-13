@@ -151,27 +151,31 @@ export function ViewSimulator({
 export function SubmissionRow({
   submission,
   brand = false,
+  showIdentity = true,
   onUpdated,
 }: {
   submission: Submission;
   brand?: boolean;
+  showIdentity?: boolean;
   onUpdated: () => void;
 }) {
   const shortfall = submission.eligiblePayout - submission.payout;
   return (
     <article className="submission-row">
-      <div className="submission-top">
-        <div className="submission-name">
-          <h3>
-            {brand
-              ? (submission.creator?.name ?? 'Creator')
-              : (submission.campaign?.name ?? 'Campaign unavailable')}
-          </h3>
-          <a href={submission.postUrl} target="_blank" rel="noopener noreferrer">
-            Open post
-            <ExternalLink size={12} />
-          </a>
-        </div>
+      <div className={`submission-top ${showIdentity ? '' : 'submission-totals'}`}>
+        {showIdentity && (
+          <div className="submission-name">
+            <h3>
+              {brand
+                ? (submission.creator?.name ?? 'Creator')
+                : (submission.campaign?.name ?? 'Campaign unavailable')}
+            </h3>
+            <a href={submission.postUrl} target="_blank" rel="noopener noreferrer">
+              Open post
+              <ExternalLink size={12} />
+            </a>
+          </div>
+        )}
         <div className="submission-metric">
           <span>Views</span>
           <strong>{number(submission.views)}</strong>
