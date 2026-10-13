@@ -96,6 +96,13 @@ legend {
 .field-hint {
   color: var(--muted);
 }
+.branding {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
 .logo {
   display: inline-flex;
   align-items: center;
@@ -305,7 +312,7 @@ legend {
   background: #000000;
   border-right: 1px solid var(--line);
 }
-.sidebar > .logo {
+.sidebar > .branding {
   margin: 0 10px 36px;
 }
 .workspace-label {
@@ -758,6 +765,9 @@ legend {
   border-radius: 14px;
   background: var(--surface);
 }
+.auth-page > .branding {
+  align-items: center;
+}
 .auth-form-wrap h1 {
   font-size: 22px;
 }
@@ -962,6 +972,7 @@ legend {
 @media (max-width: 800px) {
   .app-shell {
     grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
   }
   .sidebar {
     position: static;
@@ -974,7 +985,7 @@ legend {
     border-right: 0;
     border-bottom: 1px solid var(--line);
   }
-  .sidebar > .logo {
+  .sidebar > .branding {
     margin: 0;
   }
   .workspace-label {

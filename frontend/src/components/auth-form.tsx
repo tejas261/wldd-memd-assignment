@@ -122,7 +122,6 @@ export function AuthForm({ signup = false }: { signup?: boolean }) {
           </p>
         </div>
       </section>
-      <p className="auth-footnote">Campaign payout tracker</p>
     </main>
   );
 }

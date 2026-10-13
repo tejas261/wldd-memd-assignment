@@ -93,7 +93,6 @@ export function Shell({
             {role === 'brand' ? 'Brand' : 'Creator'} <span className="muted">/</span>{' '}
             <strong>Overview</strong>
           </span>
-          <span className="muted">Campaign payout tracker</span>
         </header>
         <main id="main" className="main-content">
           {error && <ErrorNotice error={error} />} {children}

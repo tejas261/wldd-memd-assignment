@@ -15,9 +15,12 @@ import type { Campaign, Milestone } from '@/types';
 
 export function Logo() {
   return (
-    <span className="logo">
-      <span className="logo-mark">m</span> Meme’d
-    </span>
+    <div className="branding">
+      <span className="logo">
+        <span className="logo-mark">m</span> Meme’d
+      </span>
+      <p className="auth-footnote">Campaign payout tracker</p>
+    </div>
   );
 }
 export function ErrorNotice({ error, retry }: { error: string; retry?: () => void }) {
