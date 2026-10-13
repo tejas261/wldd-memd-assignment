@@ -33,13 +33,6 @@ export function ErrorNotice({ error, retry }: { error: string; retry?: () => voi
     </div>
   );
 }
-export function Loading() {
-  return (
-    <div className="loading" role="status">
-      <span className="spinner" /> Loading…
-    </div>
-  );
-}
 export function Empty({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="empty">
@@ -165,11 +158,13 @@ export function Pagination({
   total,
   limit,
   onChange,
+  loading = false,
 }: {
   page: number;
   total: number;
   limit: number;
   onChange: (page: number) => void;
+  loading?: boolean;
 }) {
   const pages = Math.ceil(total / limit);
   if (pages <= 1) return null;
@@ -178,7 +173,7 @@ export function Pagination({
       <button
         className="icon-button"
         aria-label="Previous page"
-        disabled={page <= 1}
+        disabled={loading || page <= 1}
         onClick={() => onChange(page - 1)}
       >
         <ChevronLeft size={18} />
@@ -189,7 +184,7 @@ export function Pagination({
       <button
         className="icon-button"
         aria-label="Next page"
-        disabled={page >= pages}
+        disabled={loading || page >= pages}
         onClick={() => onChange(page + 1)}
       >
         <ChevronRight size={18} />

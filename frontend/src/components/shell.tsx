@@ -3,12 +3,21 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LayoutGrid, LogOut, Wallet, Radio } from 'lucide-react';
-import type { User } from '@/types';
+import type { Role, User } from '@/types';
 import { api } from '@/utils/api';
 import { message } from '@/utils/errors';
 import { ErrorNotice, Logo } from './ui';
+import { Skeleton } from './skeletons';
 
-export function Shell({ user, children }: { user: User; children: React.ReactNode }) {
+export function Shell({
+  user,
+  role,
+  children,
+}: {
+  user: User | null;
+  role: Role;
+  children: React.ReactNode;
+}) {
   const router = useRouter();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -29,11 +38,9 @@ export function Shell({ user, children }: { user: User; children: React.ReactNod
       </a>
       <aside className="sidebar">
         <Logo />
-        <div className="workspace-label">
-          {user.role === 'brand' ? 'Brand' : 'Creator'} workspace
-        </div>
+        <div className="workspace-label">{role === 'brand' ? 'Brand' : 'Creator'} workspace</div>
         <nav aria-label="Main navigation">
-          <a className="nav-item active" href={`/${user.role}`} aria-current="page">
+          <a className="nav-item active" href={`/${role}`} aria-current="page">
             <LayoutGrid size={18} />
             Overview
           </a>
@@ -41,34 +48,49 @@ export function Shell({ user, children }: { user: User; children: React.ReactNod
             <Radio size={18} />
             Campaigns
           </a>
-          {user.role === 'creator' && (
+          {role === 'creator' && (
             <a className="nav-item" href="#earnings">
               <Wallet size={18} />
               My submissions
             </a>
           )}
         </nav>
-        <div className="profile">
-          <span className="avatar">{user.name.slice(0, 1).toUpperCase()}</span>
-          <div>
-            <strong>{user.name}</strong>
-            <span>{user.role === 'brand' ? 'Brand account' : 'Creator account'}</span>
-          </div>
-          <button
-            className="icon-button"
-            title="Log out"
-            aria-label="Log out"
-            disabled={busy}
-            onClick={logout}
-          >
-            <LogOut size={18} />
-          </button>
+        <div className="profile" aria-busy={!user}>
+          {user ? (
+            <>
+              <span className="avatar">{user.name.slice(0, 1).toUpperCase()}</span>
+              <div>
+                <strong>{user.name}</strong>
+                <span>{user.role === 'brand' ? 'Brand account' : 'Creator account'}</span>
+              </div>
+              <button
+                className="icon-button"
+                title="Log out"
+                aria-label="Log out"
+                disabled={busy}
+                onClick={logout}
+              >
+                <LogOut size={18} />
+              </button>
+            </>
+          ) : (
+            <>
+              <Skeleton className="avatar" width={32} height={32} />
+              <div className="skeleton-stack">
+                <Skeleton width={90} />
+                <Skeleton width={70} height={11} />
+              </div>
+              <span className="sr-only" role="status">
+                Loading account…
+              </span>
+            </>
+          )}
         </div>
       </aside>
       <div className="workspace">
         <header className="topbar">
           <span>
-            {user.role === 'brand' ? 'Brand' : 'Creator'} <span className="muted">/</span>{' '}
+            {role === 'brand' ? 'Brand' : 'Creator'} <span className="muted">/</span>{' '}
             <strong>Overview</strong>
           </span>
           <span className="muted">Campaign payout tracker</span>

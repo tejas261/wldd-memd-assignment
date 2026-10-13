@@ -224,25 +224,40 @@ legend {
   font-size: 12px;
   margin-top: 10px;
 }
-.loading {
+.skeleton {
+  display: block;
+  max-width: 100%;
+  flex-shrink: 0;
+  border-radius: 6px;
+  background: #242424;
+  animation: skeleton-pulse 1.6s ease-in-out infinite alternate;
+}
+.skeleton-stack {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: 150px;
-  color: var(--muted);
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
 }
-.spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--line);
-  border-top-color: var(--blue);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+.skeleton-campaign-name {
+  min-width: 160px;
 }
-@keyframes spin {
+.amount .skeleton,
+.submission-metric .skeleton {
+  margin-left: auto;
+}
+.stat-skeleton .stat-label > .skeleton {
+  margin: 3px 0;
+}
+.stat-skeleton > span {
+  display: block;
+  padding: 7px 0;
+}
+@keyframes skeleton-pulse {
+  from {
+    opacity: 0.45;
+  }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
   }
 }
 .center-screen {
@@ -398,6 +413,10 @@ legend {
   color: var(--muted);
   font-size: 13px;
   margin-top: 7px;
+}
+.page-heading > div {
+  min-width: 0;
+  max-width: 100%;
 }
 .stats {
   display: grid;
@@ -966,11 +985,14 @@ legend {
     grid-row: 2;
     flex-direction: row;
     gap: 6px;
+    min-width: 0;
+    overflow-x: auto;
   }
   .nav-item {
     padding: 9px 10px;
     font-size: 12px;
     gap: 7px;
+    flex-shrink: 0;
   }
   .nav-item svg {
     width: 16px;
@@ -1074,6 +1096,9 @@ legend {
   .campaign-action .button {
     width: 100%;
   }
+  .campaign-action .skeleton-button {
+    width: 100% !important;
+  }
   .ladder-label {
     border-bottom: 1px solid var(--line);
     margin-bottom: 4px;
@@ -1131,6 +1156,9 @@ legend {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
   *,
   *::before,
   *::after {

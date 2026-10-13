@@ -7,7 +7,8 @@ import { message } from '@/utils/errors';
 import { money, number } from '@/utils/format';
 import { useResource } from '@/hooks/use-resource';
 import type { Campaign, Submission, PageData } from '@/types';
-import { Empty, ErrorNotice, Loading, Modal, Pagination, Ladder } from './ui';
+import { Empty, ErrorNotice, Modal, Pagination, Ladder } from './ui';
+import { LoadingContent, SubmissionListSkeleton } from './skeletons';
 
 export function SubmitPost({
   campaign,
@@ -137,9 +138,6 @@ export function ViewSimulator({
           {busy ? 'Updating…' : 'Update views'}
         </button>
       </form>
-      <p className="field-hint">
-        Demo control. Updates the total view count; lower counts are ignored.
-      </p>
       {error && <ErrorNotice error={error} />}{' '}
       {notice && (
         <p className="success-text" role="status">
@@ -214,34 +212,42 @@ export function CampaignSubmissions({
     <Modal title={campaign.name} onClose={onClose}>
       <p className="modal-intro">Payout milestones and submitted posts.</p>
       <Ladder milestones={campaign.milestones} />
-      {resource.error ? (
-        <ErrorNotice error={resource.error} retry={resource.reload} />
-      ) : !resource.data ? (
-        <Loading />
-      ) : resource.data.submissions.length === 0 ? (
-        <Empty title="No submissions yet">Creators’ submissions will appear here.</Empty>
-      ) : (
-        <>
-          <div className="submission-list">
-            {resource.data.submissions.map((submission) => (
-              <SubmissionRow
-                key={submission._id}
-                submission={submission}
-                brand
-                onUpdated={() => {
-                  resource.reload();
-                  onUpdated();
-                }}
-              />
-            ))}
-          </div>
-          <Pagination
-            page={page}
-            total={resource.data.total}
-            limit={resource.data.limit}
-            onChange={setPage}
-          />
-        </>
+      <LoadingContent
+        loading={resource.loading}
+        label="Loading campaign submissions…"
+        skeleton={<SubmissionListSkeleton rows={resource.data?.submissions.length || 2} />}
+      >
+        {resource.error ? (
+          <ErrorNotice error={resource.error} retry={resource.reload} />
+        ) : (
+          resource.data &&
+          (resource.data.submissions.length === 0 ? (
+            <Empty title="No submissions yet">Creators’ submissions will appear here.</Empty>
+          ) : (
+            <div className="submission-list">
+              {resource.data.submissions.map((submission) => (
+                <SubmissionRow
+                  key={submission._id}
+                  submission={submission}
+                  brand
+                  onUpdated={() => {
+                    resource.reload();
+                    onUpdated();
+                  }}
+                />
+              ))}
+            </div>
+          ))
+        )}
+      </LoadingContent>
+      {resource.data && (
+        <Pagination
+          page={page}
+          total={resource.data.total}
+          limit={resource.data.limit}
+          onChange={setPage}
+          loading={resource.loading}
+        />
       )}
     </Modal>
   );
