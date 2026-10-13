@@ -104,8 +104,17 @@ export function CreatorDashboard() {
               <div className="campaign-list joined-campaign-list">
                 {earnings.data.submissions.map((submission) => (
                   <div className="joined-campaign" key={submission._id}>
-                    {submission.campaign && (
-                      <CampaignCard campaign={submission.campaign}>
+                    {submission.campaign ? (
+                      <CampaignCard
+                        campaign={submission.campaign}
+                        summary={
+                          <SubmissionRow
+                            submission={submission}
+                            showIdentity={false}
+                            onUpdated={earnings.reload}
+                          />
+                        }
+                      >
                         <a
                           className="button secondary"
                           href={submission.postUrl}
@@ -116,12 +125,9 @@ export function CreatorDashboard() {
                           <ExternalLink size={15} />
                         </a>
                       </CampaignCard>
+                    ) : (
+                      <SubmissionRow submission={submission} onUpdated={earnings.reload} />
                     )}
-                    <SubmissionRow
-                      submission={submission}
-                      showIdentity={!submission.campaign}
-                      onUpdated={earnings.reload}
-                    />
                   </div>
                 ))}
               </div>

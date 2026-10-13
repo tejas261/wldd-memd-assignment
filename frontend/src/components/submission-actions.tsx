@@ -181,7 +181,7 @@ export function SubmissionRow({
           <strong>{number(submission.views)}</strong>
         </div>
         <div className="submission-metric">
-          <span>Credited</span>
+          <span>{brand ? 'Credited' : 'Earnings'}</span>
           <strong>{money(submission.payout)}</strong>
         </div>
       </div>

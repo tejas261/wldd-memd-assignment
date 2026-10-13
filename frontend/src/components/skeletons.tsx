@@ -127,23 +127,26 @@ export function CampaignListSkeleton({
               </div>
               <Skeleton height={4} />
             </div>
-            <div className="ladder">
-              <div className="ladder-label">
-                <span>Views</span>
-                <span>Total payout</span>
-              </div>
-              {[0, 1, 2].map((step) => (
-                <div className="ladder-step" key={step}>
-                  <Skeleton width={45} height={18} />
-                  <Skeleton width={55} height={18} />
+            {withSubmission ? (
+              <SubmissionSkeleton showIdentity={false} />
+            ) : (
+              <div className="ladder">
+                <div className="ladder-label">
+                  <span>Views</span>
+                  <span>Total payout</span>
                 </div>
-              ))}
-            </div>
+                {[0, 1, 2].map((step) => (
+                  <div className="ladder-step" key={step}>
+                    <Skeleton width={45} height={18} />
+                    <Skeleton width={55} height={18} />
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="campaign-action">
               <Skeleton className="skeleton-button" width={135} height={40} />
             </div>
           </div>
-          {withSubmission && <SubmissionSkeleton showIdentity={false} />}
         </div>
       ))}
     </div>
@@ -170,7 +173,7 @@ function SubmissionSkeleton({ showIdentity = true }: { showIdentity?: boolean })
             <Skeleton width={70} height={16} />
           </div>
         )}
-        {['Views', 'Credited'].map((label) => (
+        {['Views', showIdentity ? 'Credited' : 'Earnings'].map((label) => (
           <div className="submission-metric" key={label}>
             <span>{label}</span>
             <strong>

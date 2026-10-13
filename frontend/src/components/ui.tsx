@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useRef } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import {
   ArrowDownLeft,
   Camera,
@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleAlert,
+  Info,
 } from 'lucide-react';
 import { money, shortNumber } from '@/utils/format';
 import type { Campaign, Milestone } from '@/types';
@@ -60,12 +61,14 @@ export function Modal({
   const id = useId();
   useEffect(() => {
     const dialog = ref.current!;
+    const trigger = document.activeElement;
     dialog.showModal();
     const overflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       dialog.close();
       document.body.style.overflow = overflow;
+      if (trigger instanceof HTMLElement) trigger.focus();
     };
   }, []);
   return (
@@ -123,9 +126,11 @@ export function Ladder({ milestones }: { milestones: Milestone[] }) {
 }
 export function CampaignCard({
   campaign,
+  summary,
   children,
 }: {
   campaign: Campaign;
+  summary?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const remaining = Math.max(0, campaign.budget - campaign.spent);
@@ -139,7 +144,10 @@ export function CampaignCard({
             {remaining > 0 ? 'Live' : 'Budget used'}
           </span>
         </div>
-        <h3>{campaign.name}</h3>
+        <div className="campaign-heading">
+          <h3>{campaign.name}</h3>
+          {summary && <PayoutInfo campaign={campaign} />}
+        </div>
         <div className="budget-info">
           <span>{money(remaining)} left</span>
           <span className="muted">of {money(campaign.budget)}</span>
@@ -151,9 +159,38 @@ export function CampaignCard({
           aria-label={`${campaign.name} budget spent`}
         />
       </div>
-      <Ladder milestones={campaign.milestones} />
+      {summary ?? <Ladder milestones={campaign.milestones} />}
       <div className="campaign-action">{children}</div>
     </article>
+  );
+}
+
+function PayoutInfo({ campaign }: { campaign: Campaign }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        className="icon-button payout-info"
+        aria-label={`Payout milestones for ${campaign.name}`}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        title="Payout milestones"
+        onClick={() => setOpen(true)}
+      >
+        <Info size={17} />
+      </button>
+      {open && (
+        <Modal title="Payout milestones" onClose={() => setOpen(false)}>
+          <p className="modal-intro">{campaign.name}</p>
+          <Ladder milestones={campaign.milestones} />
+          <p className="field-hint">
+            Payouts follow the highest milestone reached, subject to the campaign’s remaining
+            budget. Earnings shown on your dashboard are the amount already credited.
+          </p>
+        </Modal>
+      )}
+    </>
   );
 }
 export function Pagination({

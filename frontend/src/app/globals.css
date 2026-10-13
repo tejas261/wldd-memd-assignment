@@ -553,11 +553,12 @@ legend {
 .campaign-list > * + * {
   border-top: 1px solid var(--line);
 }
-.joined-campaign > .submission-row {
-  padding-top: 0;
+.campaign-card > .submission-row {
+  min-width: 0;
+  padding: 0;
 }
 .submission-top.submission-totals {
-  grid-template-columns: repeat(2, minmax(0, 130px));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .submission-totals .submission-metric {
   text-align: left;
@@ -573,6 +574,17 @@ legend {
 }
 .campaign-description {
   min-width: 0;
+}
+.campaign-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.campaign-heading h3 {
+  min-width: 0;
+}
+.payout-info {
+  color: var(--blue);
 }
 .card-top {
   display: flex;
@@ -740,6 +752,12 @@ legend {
 }
 .simulator .notice {
   margin-bottom: 0;
+}
+.campaign-card .simulator form {
+  flex-wrap: wrap;
+}
+.campaign-card .simulator .field {
+  flex-basis: 120px;
 }
 
 /* Authentication and dialogs */
