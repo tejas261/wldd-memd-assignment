@@ -90,6 +90,16 @@ The seed adds three campaigns and an example submission. Its post URL is a place
 
 Payouts update the submission and campaign in one MongoDB transaction. Concurrent updates retry against the current balance so they can't overspend or pay twice. Old spike-detection fields, if present in an existing database, are unused; no data migration is needed.
 
+## Scaling to 10,000 creators
+
+I’d start by checking how many creators are using the app at the same time and how often their views need updating. I haven’t load-tested it with 10,000 creators yet, so that would be the first step before deciding what needs changing.
+
+The dashboard already uses pagination, and there are indexes for the common queries. I’d look for slow queries first. If the API needs more capacity, I’d add instances and check that their combined database connections stay within Atlas limits. Campaign details could also be cached for a short time.
+
+The part I’d watch most closely is several creators earning from the same campaign at once. They all update the same budget, which could cause frequent transaction retries. A queue could process updates one at a time per campaign, while separate campaigns run in parallel. The existing transaction and budget check would still handle payouts; cached balances wouldn’t be used for that.
+
+Once real view fetching is added, I’d run it in background jobs, with retries and limits on calls to Instagram or YouTube. I’d also test duplicate updates and failed jobs to check that retrying them never pays twice or takes a campaign over budget.
+
 ## Tests
 
 ```sh
@@ -104,4 +114,4 @@ Jest unit tests cover payout calculation and the budget cap, including milestone
 
 There are two Vercel projects, with root directories `backend` and `frontend`, both using Node 24. Set the backend environment variables above, allow the API host to connect to Atlas, and set the frontend's `API_URL` to the deployed backend origin before building. Set backend `FRONTEND_URL` to the frontend's public URL. `/api/health` checks database connectivity.
 
-Redis caching, spike detection, Docker packaging and the scaling write-up are not included. The UI layout follows [Mantis Free](https://codedthemes.com/item/mantis-free-figma-ui-kit/) with a custom dark palette.
+Redis caching, spike detection and Docker packaging are not included. The UI layout follows [Mantis Free](https://codedthemes.com/item/mantis-free-figma-ui-kit/) with a custom dark palette.
