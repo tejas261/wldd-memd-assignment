@@ -4,6 +4,8 @@ Brands create campaigns with a budget and view milestones. Creators submit an In
 
 [Live app](https://memed-payout-tracker.vercel.app)
 
+For a walkthrough, see [How to use](#how-to-use). To run the app locally, follow [Setup](#setup).
+
 Built with Next.js and TypeScript, Express, Mongoose and MongoDB Atlas. Authentication uses JWTs in an HTTP-only cookie.
 
 The frontend uses shadcn/ui (Radix) components with a dark Tailwind theme. Shared primitives live in `frontend/src/components/ui`; `frontend/components.json` configures the component generator.
@@ -65,18 +67,51 @@ frontend/src/
   utils/          # API requests, error messages and formatting
 ```
 
-## Demo
+## How to use
 
-These accounts are available on the live app and through the local seed:
+Open the [live app](https://memed-payout-tracker.vercel.app), or http://localhost:3000 after completing the local setup. Log in with a demo account below, or choose **Create an account**, select **Brand** or **Creator**, and enter your name, email and a password of at least eight characters.
+
+These demo accounts are available on the live app. For a local installation, run `npm run seed` first:
 
 | Role    | Email                | Password       |
 | ------- | -------------------- | -------------- |
 | Brand   | `brand@memed.demo`   | `MemeDemo123!` |
 | Creator | `creator@memed.demo` | `MemeDemo123!` |
 
-Create a campaign as a brand, then sign in as a creator. **Live campaigns** lists campaigns with budget available, 10 per page; submit a post link there to join. The creator dashboard shows only campaigns you’ve submitted to, five per page, including campaigns that have used their budget. Each campaign includes its post and payout controls. Use **Simulate views** to update the post's total views. For the default ladder, 50,000 views earns ₹2,000; updating to 100,000 adds ₹3,000 if enough budget remains. The brand sees the same amount deducted from its budget.
+Use the **Log out** icon beside your name in the sidebar to switch accounts. You can also use separate browser profiles to keep a brand and creator signed in at the same time.
 
 The seed adds three campaigns and an example submission. Its post URL is a placeholder. Rerunning the seed doesn't clear existing data.
+
+### Create a campaign as a brand
+
+1. Log in as a brand and click **Create campaign** on the dashboard.
+2. Enter a campaign name, choose **Instagram** or **YouTube**, and set the **Total budget (₹)**. The budget is shared by all creators in that campaign.
+3. Keep the default payout milestones or edit them. Each row sets the total earnings at a view threshold. Use **Add milestone** or the trash icon to change the rows. You can have 1–10 milestones; view thresholds must be unique, payouts must increase with views, and no payout can exceed the campaign budget.
+4. Click **Launch campaign**. It becomes available to creators immediately.
+5. Use **View submissions** in the campaign's row to see submitted posts, views and credited earnings. The dashboard's **Paid** and **Remaining** columns show how much of the budget has been used. Click **Refresh** to pick up changes made from another account.
+
+### Join a campaign as a creator
+
+1. Log in as a creator and open **Live campaigns** in the sidebar, or click **Browse live campaigns** on the dashboard.
+2. Choose a campaign and check its platform, remaining budget and payout milestones.
+3. Publish your post on that platform, then click **Submit a post** in Meme’d. Paste the public HTTPS link to your Instagram post/reel or YouTube video/Short and click **Submit post**. Meme’d records the link; it doesn't publish the post for you. Each creator can submit one post per campaign.
+4. Follow **View your dashboard** to find it under **My campaigns**. Your views and earnings appear in the campaign row. Click the info icon beside the campaign name to see its payout milestones, or **Open post** to visit your submission.
+
+Live campaigns shows 10 campaigns per page, your creator dashboard shows five joined campaigns per page, and the brand dashboard shows 12 campaigns per page. Use the arrow buttons below each list to change pages. Campaigns with no budget left disappear from Live campaigns but remain on the dashboards of creators who joined them.
+
+### Try a payout update
+
+Views aren't fetched automatically from Instagram or YouTube in this version. On the creator dashboard, expand **Simulate views** under a submitted post, enter its **Total views**, and click **Update views**. Enter the full count each time, rather than just the new views. Brands can use the same control inside **View submissions**.
+
+With a fresh submission, the default milestones and enough remaining budget, try these updates in order:
+
+| Total views entered | Added this update | Total earnings |
+| ------------------- | ----------------- | -------------- |
+| 50,000              | ₹2,000            | ₹2,000         |
+| 100,000             | ₹3,000            | ₹5,000         |
+| 100,000 again       | ₹0                | ₹5,000         |
+
+The creator's earnings increase by the amount credited, and the campaign's remaining budget decreases by the same amount. If the budget can't cover the full payout, only the remaining balance is credited; **Budget limited** shows the amount left uncredited. These are tracked earnings for the assignment, with no real money transfers.
 
 ## Payout assumptions
 
